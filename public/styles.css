@@ -1,0 +1,92 @@
+/*Theme the Tabulator element*/
+#table{
+    background-color:rgb(255, 255, 255);
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+/*Theme the header*/
+#table .tabulator-header {
+    background-color:rgb(255, 255, 255);
+    color:rgb(90, 90, 90);
+}
+
+#table .tabulator-row{
+    color:rgb(0, 0, 0);
+    background-color: rgb(240, 240, 240);
+}
+
+#table .tabulator-row-odd {
+    background-color: rgb(230, 230, 230);
+}
+
+#table .tabulator-row .marked-cell{
+    background-color: rgb(245, 245, 245);
+}
+
+#table .tabulator-row-odd .marked-cell{
+    background-color: rgb(235, 235, 235);
+}
+
+#table .tabulator-selected .marked-cell{
+    background-color: #9ABCEA !important;
+}
+
+#table .tabulator-selected {
+    background-color: #9ABCEA !important;
+}
+
+#alert_msg {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index:999;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+#alert_msg.hide {
+    opacity: 0;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+.formatx {
+    transform: translateY(30px);
+}
+
+.loading {
+    background-color: black;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    opacity: 0.3;
+    display: none;
+}
+
+.spinner-border {
+    color: rgb(255, 255, 255);
+    width: 8rem;
+    height: 8rem;
+    border-width: 1rem;
+    position: absolute;
+    top: 40%;
+    left: 46%;
+    z-index: 200;
+}
+
+.offcanvas {
+    width: 50%;
+}
+
+#search_label {
+    font-size: 20px;
+    top: -3px;
+    left: 40px
+}
