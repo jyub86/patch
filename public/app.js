@@ -592,7 +592,8 @@ const editContextMenu = [
                     table.updateRow(selRows[i].getIndex(), data);
                 }
             }
-            autoSave()
+            table.redraw(true);
+            autoSave();
         }
     },
 ]
@@ -615,42 +616,42 @@ let table = new Tabulator("#table", {
     autoColumnsDefinitions:[
         {title:"ID", field:"id", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true},
         {title:"FILE PATH", field:"path", headerVertical:true, hozAlign:"left", visible:true, editable:false, download:true,
-        formatter:addCellClass, contextMenu:cellContextMenu},
-        {title:"FRAME IN", field:"framein", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
-        {title:"FRAME OUT", field:"frameout", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
-        {title:"FRAME RANGE", field:"framerange", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"SEQUENCE PAD", field:"pad", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"TIMECODE IN", field:"timecodein", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"TIMECODE OUT", field:"timecodeout", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"WIDTH", field:"width", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"HEIGHT", field:"height", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"EXTENTION", field:"ext", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"FPS", field:"fps", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"CODEC", field:"codec", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        contextMenu:cellContextMenu},
+        {title:"FRAME IN", field:"framein", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
+        {title:"FRAME OUT", field:"frameout", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
+        {title:"FRAME RANGE", field:"framerange", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"SEQUENCE PAD", field:"pad", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"TIMECODE IN", field:"timecodein", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"TIMECODE OUT", field:"timecodeout", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"WIDTH", field:"width", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"HEIGHT", field:"height", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"EXTENTION", field:"ext", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"FPS", field:"fps", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"CODEC", field:"codec", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
         {title:"SHOT NAME", field:"shotname", headerVertical:true, hozAlign:"left", editable:true, editor:"input", download:true,
-        formatter:addCellClass, contextMenu:editContextMenu},
+        contextMenu:editContextMenu},
         {title:"TRIM IN(frame)", field:"trimin", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
         formatter:trimCheck, contextMenu:editContextMenu},
         {title:"TRIM OUT(frame)", field:"trimout", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
         formatter:trimCheck, contextMenu:editContextMenu},
         {title:"TRIM IN(timecode)", field:"trimintc", headerVertical:true, hozAlign:"center", editable:true, editor:"input", download:true,
-        formatter:addCellClass, editorParams:{ //masking
+        editorParams:{ //masking
             mask:"99:99:99:99",
             maskAutoFill:true,
         }, contextMenu:editContextMenu},
         {title:"TRIM OUT(timecode)", field:"trimouttc", headerVertical:true, hozAlign:"center", editable:true, editor:"input", download:true,
-        formatter:addCellClass, editorParams:{ // masking
+        editorParams:{ // masking
             mask:"99:99:99:99",
             maskAutoFill:true,
         }, contextMenu:editContextMenu},
         {title:"COLORSPACE IN", field:"colorin", headerVertical:true, hozAlign:"center", editable:true, editor:"input", download:true,
-        formatter:addCellClass, contextMenu:editContextMenu},
+        contextMenu:editContextMenu},
         {title:"COLORSPACE OUT", field:"colorout", headerVertical:true, hozAlign:"center", editable:true, editor:"input", download:true,
-        formatter:addCellClass, contextMenu:editContextMenu},
+        contextMenu:editContextMenu},
         {title:"RESIZE WIDTH", field:"rewidth", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
-        formatter:addClassPadding, contextMenu:editContextMenu},
+        formatter:addPadding, contextMenu:editContextMenu},
         {title:"RESIZE HEIGHT", field:"reheight", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
-        formatter:addClassPadding, contextMenu:editContextMenu},
+        formatter:addPadding, contextMenu:editContextMenu},
         {title:"PUBLISH", field:"pub", headerVertical:true, hozAlign:"center", formatter:"tickCross", editor:"tickCross", download:true, contextMenu:cellContextMenu},
         {title:"LOG", field:"log", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
     ],
@@ -686,7 +687,8 @@ let table = new Tabulator("#table", {
             }
             table.updateRow(selRows[i].getIndex(), data);
         }
-        autoSave()
+        table.redraw(true);
+        autoSave();
     },
     cellClick:function(e, cell){
         // prevent row select for editable cells
@@ -702,29 +704,14 @@ let table = new Tabulator("#table", {
 });
 
 //// formatter functions
-// add class
-function addCellClass(cell) {
-    cell.getElement().classList.add("marked-cell");
-    return cell.getValue()  
-}
-
 // add padding
 function addPadding(cell) {
     let data = cell.getRow().getData();
     return fillZero(data["pad"], cell.getValue()) 
 }
 
-// add class and padding
-function addClassPadding(cell) {
-    cell.getElement().classList.add("marked-cell")
-    let data = cell.getRow().getData();
-    return fillZero(data["pad"], cell.getValue()) 
-}
-
 // trim check
 function trimCheck(cell) {
-    // add class
-    cell.getElement().classList.add("marked-cell");
     let value = cell.getValue();
     if (!value) {
         let data = cell.getRow().getData();
@@ -1008,11 +995,13 @@ function show_all() {
 // click hide all button
 document.getElementById("hide_all").addEventListener("click", function(){
     hide_all();
+    table.redraw(true);
 });
 
 // click show all button
 document.getElementById("show_all").addEventListener("click", function(){
     show_all();
+    table.redraw(true);
 });
 
 // click frame button
@@ -1022,6 +1011,7 @@ document.getElementById("frame").addEventListener("click", function(){
     } else {
         showColumn("frame")
     }
+    table.redraw(true);
 });
 
 // click timecode button
@@ -1031,6 +1021,7 @@ document.getElementById("timecode").addEventListener("click", function(){
     } else {
         showColumn("timecode")
     }
+    table.redraw(true);
 });
 
 // click format button
@@ -1040,6 +1031,7 @@ document.getElementById("format").addEventListener("click", function(){
     } else {
         showColumn("format")
     }
+    table.redraw(true);
 });
 
 // click ext button
@@ -1049,6 +1041,7 @@ document.getElementById("ext").addEventListener("click", function(){
     } else {
         showColumn("ext")
     }
+    table.redraw(true);
 });
 
 // click video button
@@ -1058,6 +1051,7 @@ document.getElementById("video").addEventListener("click", function(){
     } else {
         showColumn("video")
     }
+    table.redraw(true);
 });
 
 // select row on "select all" button click
