@@ -1,12 +1,6 @@
-// undo redo focus
 // add 중복 체크
 // save to
 // project 별
-// preference check
-// keyboard shortcuts
-// mov plate4
-// start frame
-// 시퀀스 타임코드 막기
 
 ///////////////////////////////
 ///////////////
@@ -251,6 +245,28 @@ document.querySelector('#modal_close').addEventListener('click', function (event
         message("Preferences saved", "alert-success")
     })
 })
+
+document.querySelector('#preferences_modal').addEventListener('hidden.bs.modal', function (event) {
+    err = "Preference setup is not completed. It may not operate correctly."
+    isMissing = false;
+    if (!ffmpeg.value) {
+        isMissing = true;
+    } else if (!ffprobe.value) {
+        isMissing = true;
+    } else if (!oiioTool.value) {
+        isMissing = true;
+    } else if (!ocio.value) {
+        isMissing = true;
+    } else if (!seqsplitter.value) {
+        isMissing = true;
+    } else if (!seqpad.value) {
+        isMissing = true;
+    }
+    if (isMissing) {
+        message(err, "alert-danger")
+    }
+})
+
 
 // splitter change
 splitter.addEventListener("keyup", function(){
@@ -586,20 +602,16 @@ let table = new Tabulator("#table", {
     data:tabledata,
     autoColumns:true,
     layout:"fitDataFill",
-    tooltips:true,
     addRowPos:"top",
     history:true,
     pagination:"local",
     paginationSize:10,
     paginationSizeSelector:[10, 20, 50, 100],
-    movableColumns:true,
     selectable:true,
     selectableRollingSelection:false,
     initialSort:[
         {column:"path", dir:"asc"},
     ],
-    keybindings:{
-    },
     autoColumnsDefinitions:[
         {title:"ID", field:"id", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true},
         {title:"FILE PATH", field:"path", headerVertical:true, hozAlign:"left", visible:true, editable:false, download:true,
@@ -616,7 +628,7 @@ let table = new Tabulator("#table", {
         {title:"FPS", field:"fps", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
         {title:"CODEC", field:"codec", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
         {title:"SHOT NAME", field:"shotname", headerVertical:true, hozAlign:"left", editable:true, editor:"input", download:true,
-        formatter:shotnameCheck, contextMenu:editContextMenu},
+        formatter:addCellClass, contextMenu:editContextMenu},
         {title:"TRIM IN(frame)", field:"trimin", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
         formatter:trimCheck, contextMenu:editContextMenu},
         {title:"TRIM OUT(frame)", field:"trimout", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
@@ -647,25 +659,30 @@ let table = new Tabulator("#table", {
         document.getElementById("total-stats").innerHTML = table.getDataCount();
     },
     cellEdited:function(cell){
-        // pub check
-        let data = cell.getRow().getData();
-        let field = cell.getField()
-        let value = cell.getValue()
-        if (field == "pub" && value == true && !isShotname(data)) {
-            data["pub"] = false;
-            table.updateRow(cell.getRow().getIndex(), data);
-        }
         // multi edit
         let selRows = table.getSelectedRows();
+        selRows.push(cell.getRow())
         for(var i=0; i<selRows.length; i++) {
             let data = selRows[i].getData()
             let field = cell.getField()
             let value = cell.getValue()
+            data[field] = value
+            data["log"] = ""
             // pub check
-            if (field == "pub" && value == true && !isShotname(data)) {
-                data[field] = false;
-            } else {
-                data[field] = value
+            if (!isShotname(data)) {
+                data["pub"] = false;
+                data["log"] = "shotname does not exist."
+            }
+            if (isSamename(data)) {
+                data["pub"] = false;
+                data["log"] = "same shotname exists."
+            }
+            // seq code check
+            if (field == "trimintc" && !isTimecode(data)) {
+                data[field] = "";
+            }
+            if (field == "trimouttc" && !isTimecode(data)) {
+                data[field] = "";
             }
             table.updateRow(selRows[i].getIndex(), data);
         }
@@ -704,21 +721,6 @@ function addClassPadding(cell) {
     return fillZero(data["pad"], cell.getValue()) 
 }
 
-// shotname check
-function shotnameCheck(cell){
-    // add class
-    cell.getElement().classList.add("marked-cell");
-    let value = cell.getValue();
-    // shotname check
-    if (value) {
-        let data = table.searchData("shotname", "=", value);
-        if (data.length > 1) {
-            return "<span style='color:red;'>" + value + "</span>";
-        }
-        return value
-    }
-}
-
 // trim check
 function trimCheck(cell) {
     // add class
@@ -755,6 +757,26 @@ function isShotname(data) {
         return false;
     }
     return true;
+}
+
+// check timecode is not empty
+function isTimecode(data) {
+    if (data.timecodein == "00:00:00:00" && data.timecodeout == "00:00:00:00") {
+        return false;
+    }
+    return true;
+}
+
+// check same shotname
+function isSamename(data) {
+    if (!data.shotname) {
+        return false;
+    }
+    let sameNames = table.searchData("shotname", "=", data.shotname);
+    if (sameNames.length > 1) {
+        return true;
+    }
+    return false;
 }
 
 // delete dummy row
@@ -1055,7 +1077,6 @@ document.getElementById("filter-value").addEventListener("keyup", function(){
 
 // click redraw button
 document.getElementById("redraw").addEventListener("click", function(){
-    console.log("redraw")
     table.redraw(true);
 });
 
