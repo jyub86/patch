@@ -10,21 +10,34 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!--Loading-->
-    <div class="loading">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-
-    <!--Message-->
-    <div class="alert grid hide" role="alert" id="alert_msg">
-        <h5 class="text-center" id="msg"></h5>
-    </div>
-
     <!--container-->
     <div class="container-fluid">
+        
+        <!--Loading-->
+        <div class="loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+        </div>
+
+        <!--Message-->
+        <div class="alert grid hide" role="alert" id="alert_msg">
+            <h5 class="text-center" id="msg"></h5>
+        </div>
+
+        <!--Load csv confirm-->
+        <div id="load_confirm" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="toast-header">
+                <strong class="me-auto">Clear or append?</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <button type="button" class="btn btn-secondary" id="toast_clear" data-bs-dismiss="toast">Clear</button>
+                <button type="button" class="btn btn-secondary" id="toast_append" data-bs-dismiss="toast">Append</button>
+            </div>
+        </div>
+
+        <!--MAIN body-->
         <div class="row mt-5">
             <div class="col">
                 <h1 id="title">PATCH</h1>
@@ -92,6 +105,16 @@
         </div>
     </div>
 
+    <footer>
+        <div class="text-center text-muted">
+            <small class="pb-2 pt-5">
+                © 2021 <a href="mailto: jyub86@gmail.com" class="text-muted">jyub.P</a>
+            </small>
+        </div>
+    </footer>
+
+
+
     <!-- Modal -->
     <div class="modal fade" id="preferences_modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -112,25 +135,25 @@
                     <div class="row mt-3">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="ffmpeg_path_addon">FFmpeg path</span>
-                            <input type="text" class="form-control" id="ffmpeg_path" placeholder=".../.../ffmpeg" aria-describedby="ffmpeg_path_addon">
+                            <input type="text" class="form-control" id="ffmpeg_path" placeholder="support/ffmpeg" value="support/ffmpeg" aria-describedby="ffmpeg_path_addon">
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="ffprobe_path_addon">FFprobe path</span>
-                            <input type="text" class="form-control" id="ffprobe_path" placeholder=".../.../ffprobe" aria-describedby="ffprobe_path_addon">
+                            <input type="text" class="form-control" id="ffprobe_path" placeholder="support/ffprobe" value="support/ffprobe" aria-describedby="ffprobe_path_addon">
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="oiioTool_path_addon">OIIOTool path</span>
-                            <input type="text" class="form-control" id="oiioTool_path" placeholder=".../.../oiioTool" aria-describedby="oiioTool_path_addon">
+                            <input type="text" class="form-control" id="oiioTool_path" placeholder="support/oiioTool" value="support/oiioTool" aria-describedby="oiioTool_path_addon">
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="ocio_path_addon">OCIO config path</span>
-                            <input type="text" class="form-control" id="ocio_path" placeholder=".../.../config.ocio" aria-describedby="ocio_path_addon">
+                            <input type="text" class="form-control" id="ocio_path" placeholder="support/aces_1.0.3/config.ocio" value="support/aces_1.0.3/config.ocio" aria-describedby="ocio_path_addon">
                         </div>
                     </div>
                     <!--PUBLISH-->

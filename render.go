@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -23,15 +24,18 @@ func (job *Job) Render(ocio string) {
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, "OCIO="+ocio)
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	var out, stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		job.Errorlog = append(job.Errorlog, stderr.String())
+		log.Println(stderr.String())
+	}
+	if out.String() != "" {
+		log.Println(out.String())
+	}
 
-	if err := cmd.Start(); err != nil {
-		job.Errorlog = append(job.Errorlog, err.Error())
-	}
-	if err := cmd.Wait(); err != nil {
-		job.Errorlog = append(job.Errorlog, err.Error())
-	}
 	job.End = time.Now()
 	duration := time.Since(job.Start)
 	job.Duration = fmt.Sprint(duration)

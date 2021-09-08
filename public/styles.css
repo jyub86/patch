@@ -89,12 +89,17 @@
     z-index: 200;
 }
 
-.offcanvas {
-    width: 50%;
-}
-
 #search_label {
     font-size: 20px;
     top: -3px;
     left: 40px
+}
+
+#load_confirm {
+    position: absolute;
+    top: 12%;
+    left : 17%;
+    width : 260px;
+    font-size: 20px;
+    z-index: -10;
 }

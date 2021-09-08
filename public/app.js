@@ -1,7 +1,3 @@
-// add 중복 체크
-// save to
-// project 별
-
 ///////////////////////////////
 ///////////////
 // init check
@@ -85,7 +81,7 @@ function init(data) {
         // load autoSave
         fetch("/load")
         .then(response => response.json())
-        .then(data => addData(data["data"]))
+        .then(data => addData(data["data"], false))
     }
 }
 
@@ -514,6 +510,9 @@ shotname:"", trimin:0, trimout:0, trimintc:"", trimouttc:"", colorin:"", colorou
 // last index number of table
 let lastIndex = 0
 
+// add options
+let addOption = "";
+
 //// table menu
 // cell right click
 const cellContextMenu = [
@@ -614,7 +613,7 @@ let table = new Tabulator("#table", {
         {column:"path", dir:"asc"},
     ],
     autoColumnsDefinitions:[
-        {title:"ID", field:"id", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true},
+        {title:"ID", field:"id", headerVertical:true, hozAlign:"center", visible:false, editable:false, download:false},
         {title:"FILE PATH", field:"path", headerVertical:true, hozAlign:"left", visible:true, editable:false, download:true,
         contextMenu:cellContextMenu},
         {title:"FRAME IN", field:"framein", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
@@ -723,20 +722,6 @@ function trimCheck(cell) {
     return value
 }
 
-// // pub check
-// function pubCheck(cell) {
-//     let value = cell.getValue();
-//     let data = cell.getRow().getData();
-//     // shotname check
-//     if (value == true && !isShotname(data)) {
-//         data["pub"] = false;
-//         try {table.updateRow(cell.getRow().getIndex(), data);}
-//         catch {}
-//         return false
-//     }
-//     return value
-// }
-
 //// support functions
 // check shotname is not empty
 function isShotname(data) {
@@ -772,6 +757,16 @@ table.deleteRow(dummyRow);
 
 // load csv button
 document.getElementById("load_btn").addEventListener("click", function(){
+    const loadAsk = document.getElementById("load_confirm")
+    loadAsk.style.zIndex = 999;
+    var toast = new bootstrap.Toast(loadAsk)
+    toast.show()
+});
+document.getElementById("toast_clear").addEventListener("click", function(){
+    document.getElementById("clear").click()
+    document.getElementById("formFile").click()
+});
+document.getElementById("toast_append").addEventListener("click", function(){
     document.getElementById("formFile").click()
 });
 document.getElementById("formFile").addEventListener('change', function (e) {
@@ -780,7 +775,7 @@ document.getElementById("formFile").addEventListener('change', function (e) {
     let reader = new FileReader();
     reader.onload = function (e) {
         let text = e.target.result;
-        addData(csvToJSON(text))
+        addData(csvToJSON(text), true)
     };
     reader.readAsText(csv);
 });
@@ -863,13 +858,17 @@ function handleSubmit(event) {
             message(data["error"], "alert-danger")
             return
         }
-        addData(data["data"])
+        addData(data["data"], true)
     })
 }
 
 // add data from object
-function addData(data) {
+function addData(data, option) {
     show_all()
+    addOption = ""
+    if (!option) {
+        addOption = "addAll"
+    }
     for (var i = 0; i < data.length; i++) {
         item = {
             id:JSON.parse(lastIndex),
@@ -897,12 +896,38 @@ function addData(data) {
             pub:JSON.parse(data[i]["pub"]),
             log:data[i]["log"]
         }
+        let value = checkItem(item)
+        if (!value) {
+            continue
+        }
         table.addRow(item, true);
         lastIndex = lastIndex + 1;
     }
     table.redraw(true);
     autoSave()
 };
+
+function checkItem(item) {
+    if (addOption == "addAll") {
+        return true;
+    } else if (addOption == "noAll") {
+        return false;
+    }
+    let sameNames = table.searchData("path", "=", item.path);
+    if (sameNames.length == 0) {
+        return true;
+    }
+    let value = confirm(item.path+"\nSame file exists.\nDo you want add it?");
+    let option = confirm("Apply to all items?");
+    if (option) {
+        if (value) {
+            addOption = "addAll"
+        } else {
+            addOption = "noAll"
+        }
+    }
+    return value
+}
 
 // add padding to 0
 function fillZero(p, n){
@@ -1085,6 +1110,15 @@ document.getElementById("clear").addEventListener("click", function(){
 document.getElementById("pub_btn").addEventListener("click", function(){
     message("Item Published", "alert-success")
     let array = table.getData();
+    let now = new Date();
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].pub == false) {
+            continue
+        }
+        array[i].log = `Sent at : ${now.toLocaleString()}`
+    }
+    table.updateData(array)
+    autoSave()
     fetch("/publish", {
         method: "POST",
         headers: {
@@ -1098,7 +1132,28 @@ document.getElementById("pub_btn").addEventListener("click", function(){
             message(data["error"], "alert-danger")
             return
         }
-        message(data["data"] + "jobs, Publish success", "alert-success")
+        let newData = data["data"];
+        for (let i = 0; i < newData.length; i++) {
+            if (newData[i].pub == false) {
+                continue
+            }
+            let path = newData[i].path;
+            let log = newData[i].log;
+            let searchDatas = table.searchData("shotname", "=", newData[i].shotname)
+            for (let i = 0; i < searchDatas.length; i++) {
+                if (searchDatas[i].path == path) {
+                    if (log == "") {
+                        let now = new Date();
+                        searchDatas[i].log = `Done : ${now.toLocaleString()}`
+                    } else {
+                        searchDatas[i].log = log
+                    }
+                    table.updateRow(searchDatas[i].id, searchDatas[i])
+                }
+            }
+        }
+        autoSave()
+        message("Publish done", "alert-success")
     })
 })
 

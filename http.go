@@ -95,13 +95,13 @@ func (a *AppHandler) publishHandler(w http.ResponseWriter, r *http.Request) {
 		rd.JSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
-	jobs, err := Publish(&data)
+	newData, err := Publish(data)
 	if err != nil {
 		log.Println(err)
 		rd.JSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
-	rd.JSON(w, http.StatusOK, map[string]int{"data": jobs})
+	rd.JSON(w, http.StatusOK, map[string][]Item{"data": newData})
 }
 
 func MakeHandler() *AppHandler {

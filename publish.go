@@ -40,6 +40,7 @@ type Item struct {
 	ReWidth     int     `json:"rewidth"`
 	ReHeight    int     `json:"reheight"`
 	Pub         bool    `json:"pub"`
+	Log         string  `json:"log"`
 }
 
 type Job struct {
@@ -58,7 +59,7 @@ type Pub struct {
 	Jobs     []Job
 }
 
-func thumbnailJob(initData *InitData, item *Item) []Job {
+func thumbnailJob(initData *InitData, item Item) []Job {
 	jobs := make([]Job, 0)
 	shotname := item.Shotname
 	thumbPath := filepath.Join(initData.ThumbDir, initData.ThumbName+initData.ThumbExt)
@@ -106,7 +107,7 @@ func thumbnailJob(initData *InitData, item *Item) []Job {
 	return jobs
 }
 
-func plateJob(initData *InitData, item *Item) []Job {
+func plateJob(initData *InitData, item Item) []Job {
 	jobs := make([]Job, 0)
 	shotname := item.Shotname
 	// set in, out frame
@@ -174,7 +175,7 @@ func plateJob(initData *InitData, item *Item) []Job {
 	return jobs
 }
 
-func videoJob(initData *InitData, item *Item) []Job {
+func videoJob(initData *InitData, item Item) []Job {
 	jobs := make([]Job, 0)
 	shotname := item.Shotname
 	// set in, out frame
@@ -293,34 +294,42 @@ func videoJob(initData *InitData, item *Item) []Job {
 	return jobs
 }
 
-func Publish(data *[]Item) (int, error) {
+func Publish(data []Item) ([]Item, error) {
 	pubs := []Pub{}
 	initData, err := LoadInit()
 	if err != nil {
-		return 0, err
+		return data, err
 	}
-	for _, item := range *data {
-		if !item.Pub {
+	for i := range data {
+		if !data[i].Pub {
 			continue
 		}
-		shotname := item.Shotname
+		shotname := data[i].Shotname
 		pub := Pub{Shotname: shotname}
 		if initData.ThumbCheck {
-			jobs := thumbnailJob(initData, &item)
+			jobs := thumbnailJob(initData, data[i])
 			pub.Jobs = append(pub.Jobs, jobs...)
 		}
 		if initData.PlateCheck {
-			jobs := plateJob(initData, &item)
+			jobs := plateJob(initData, data[i])
 			pub.Jobs = append(pub.Jobs, jobs...)
 		}
 		if initData.VideoCheck {
-			jobs := videoJob(initData, &item)
+			jobs := videoJob(initData, data[i])
 			pub.Jobs = append(pub.Jobs, jobs...)
 		}
 		pubs = append(pubs, pub)
+		// make err array
+		errArray := make([]string, 0)
+		for _, pub := range pubs {
+			for _, job := range pub.Jobs {
+				errArray = append(errArray, job.Errorlog...)
+			}
+		}
+		data[i].Log = strings.Join(errArray, ",")
 	}
 	SaveLog(&pubs)
-	return 0, nil
+	return data, nil
 }
 
 // replace <SHOTNAME>, <PREFIX>, <SUFFIX> to real name
