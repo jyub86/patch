@@ -15,7 +15,9 @@ type AppHandler struct {
 	http.Handler
 }
 
-var rd *render.Render = render.New()
+var rd *render.Render = render.New(render.Options{
+	Extensions: []string{".html", ".tmpl"},
+})
 
 func (a *AppHandler) osSepHandler(w http.ResponseWriter, r *http.Request) {
 	osSep := string(os.PathSeparator)
@@ -104,6 +106,19 @@ func (a *AppHandler) publishHandler(w http.ResponseWriter, r *http.Request) {
 	rd.JSON(w, http.StatusOK, map[string][]Item{"data": newData})
 }
 
+func (a *AppHandler) logHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/log.html", http.StatusTemporaryRedirect)
+}
+
+func (a *AppHandler) logUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := LogData()
+	if err != nil {
+		log.Println(err)
+		rd.JSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+	rd.JSON(w, http.StatusOK, map[string][]Job{"data": data})
+}
+
 func MakeHandler() *AppHandler {
 	r := mux.NewRouter()
 	n := negroni.Classic()
@@ -118,5 +133,7 @@ func MakeHandler() *AppHandler {
 	r.HandleFunc("/load", a.loadHandler)
 	r.HandleFunc("/autosave", a.autoSaveHandler).Methods("POST")
 	r.HandleFunc("/publish", a.publishHandler).Methods("POST")
+	r.HandleFunc("/log", a.logHandler)
+	r.HandleFunc("/logupdate", a.logUpdateHandler)
 	return a
 }

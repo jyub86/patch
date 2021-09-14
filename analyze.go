@@ -66,10 +66,10 @@ import (
 //         }
 //     ]
 // }
-func (i *Item) Info(ffprobe, option string) error {
+func (i *Item) Info(ffprobe, startNumber string) error {
 	cmd := exec.Command(ffprobe, "-v", "quiet", "-print_format", "json", "-show_streams", i.Path)
-	if option != "" {
-		cmd = exec.Command(ffprobe, "-v", "quiet", "-print_format", "json", "-show_streams", "-start_number", option, i.Path)
+	if startNumber != "" {
+		cmd = exec.Command(ffprobe, "-v", "quiet", "-print_format", "json", "-show_streams", "-start_number", startNumber, i.Path)
 	}
 	stdout, err := cmd.Output()
 	if err != nil {
@@ -117,15 +117,19 @@ func (i *Item) Info(ffprobe, option string) error {
 		tcin, _ := timecode.Parse(i.TimecodeIn)               // convert type
 		timeDuration, _ := time.ParseDuration(duration + "s") // convert duration
 		frames := rate.Frames(timeDuration)                   // get total frames
-		tcoutRaw := tcin.AddFrames(frames - 1)                // make timecode out without rate
-		tcout := tcoutRaw.SetRate(rate)                       // make timecode out with rate
-		i.TimecodeOut = tcout.String()                        // convert string
+		if frames != 0 {
+			tcoutRaw := tcin.AddFrames(frames - 1) // make timecode out without rate
+			tcout := tcoutRaw.SetRate(rate)        // make timecode out with rate
+			i.TimecodeOut = tcout.String()         // convert string
+		} else {
+			i.TimecodeOut = "00:00:00:00"
+		}
 		// set frame
 		if i.FrameIn == 0 && i.FrameOut == 0 {
 			i.FrameIn = 1
 			i.FrameOut = int(frames)
 			i.FrameRange = int(frames)
-			i.Pad = 1
+			i.Pad = 0
 		}
 	}
 	return nil

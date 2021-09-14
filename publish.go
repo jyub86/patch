@@ -1,12 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-	"os/user"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -44,19 +39,16 @@ type Item struct {
 }
 
 type Job struct {
-	SubTask  string
-	OutPath  string
-	Cmd      []string
-	Cmdstr   string
-	Start    time.Time
-	End      time.Time
-	Duration string
-	Errorlog []string
-}
-
-type Pub struct {
-	Shotname string
-	Jobs     []Job
+	Shotname string    `json:"shotname"`
+	Task     string    `json:"task"`
+	SubTask  string    `json:"subtask"`
+	OutPath  string    `json:"outpath"`
+	Cmd      []string  `json:"cmd"`
+	Cmdstr   string    `json:"cmdstr"`
+	Start    time.Time `json:"start"`
+	End      time.Time `json:"end"`
+	Duration string    `json:"duration"`
+	Errorlog []string  `json:"errorlog"`
 }
 
 func thumbnailJob(initData *InitData, item Item) []Job {
@@ -73,8 +65,7 @@ func thumbnailJob(initData *InitData, item Item) []Job {
 		cmd = append(cmd, initData.Ffmpeg, "-loglevel", "error", "-y",
 			"-r", strconv.FormatFloat(initData.VideoFps, 'f', 5, 64),
 			"-i", item.Path, "-vframes", "1", tmpPath)
-		job := Job{SubTask: "thumbnail_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "thumbnail", SubTask: "thumbnail_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 		// convert to thumbnail
 		cmd = []string{}
@@ -86,8 +77,7 @@ func thumbnailJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(initData.VideoWidth), strconv.Itoa(initData.VideoHeight)))
 		}
 		cmd = append(cmd, "-o", thumbPath)
-		job = Job{SubTask: "thumbnail", OutPath: thumbPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job = Job{Shotname: shotname, Task: "thumbnail", SubTask: "thumbnail", OutPath: thumbPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	} else {
 		// sequence input
@@ -100,8 +90,7 @@ func thumbnailJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(initData.VideoWidth), strconv.Itoa(initData.VideoHeight)))
 		}
 		cmd = append(cmd, "-o", thumbPath)
-		job := Job{SubTask: "thumbnail", OutPath: thumbPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "thumbnail", SubTask: "thumbnail", OutPath: thumbPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	}
 	return jobs
@@ -136,8 +125,7 @@ func plateJob(initData *InitData, item Item) []Job {
 		cmd = append(cmd, initData.Ffmpeg, "-loglevel", "error", "-y",
 			"-r", strconv.FormatFloat(initData.VideoFps, 'f', 5, 64),
 			"-i", item.Path, tmpPath)
-		job := Job{SubTask: "plate_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "plate", SubTask: "plate_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 		// convert to plate
 		cmd = []string{}
@@ -152,8 +140,7 @@ func plateJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(item.ReWidth), strconv.Itoa(item.ReHeight)))
 		}
 		cmd = append(cmd, "-o", platePath)
-		job = Job{SubTask: "plate", OutPath: platePath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job = Job{Shotname: shotname, Task: "plate", SubTask: "plate", OutPath: platePath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	} else { // sequence input
 		cmd := []string{}
@@ -168,8 +155,7 @@ func plateJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(item.ReWidth), strconv.Itoa(item.ReHeight)))
 		}
 		cmd = append(cmd, "-o", platePath)
-		job := Job{SubTask: "plate", OutPath: platePath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "plate", SubTask: "plate", OutPath: platePath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	}
 	return jobs
@@ -207,8 +193,7 @@ func videoJob(initData *InitData, item Item) []Job {
 			cmd := []string{}
 			cmd = append(cmd, initData.Ffmpeg, "-loglevel", "error", "-y",
 				"-r", strconv.FormatFloat(initData.VideoFps, 'f', 5, 64), "-i", item.Path, tmpPath)
-			job := Job{SubTask: "plate_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-			job.Render(initData.Ocio)
+			job := Job{Shotname: shotname, Task: "video", SubTask: "plate_tmp", OutPath: tmpPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 			jobs = append(jobs, job)
 		}
 		// proxy image
@@ -229,8 +214,7 @@ func videoJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(initData.VideoWidth), strconv.Itoa(initData.VideoHeight)))
 		}
 		cmd = append(cmd, "-o", proxyPath)
-		job := Job{SubTask: "proxy", OutPath: proxyPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "video", SubTask: "proxy", OutPath: proxyPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 		// Video
 		cmd = []string{}
@@ -248,7 +232,7 @@ func videoJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-c:v", "prores_ks", "-profile:v", "5", "-vendor", "ap10", "-bits_per_mb", "8000", "pix_fmt", "yuva444p10le")
 		}
 		cmd = append(cmd, "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", videoPath)
-		job = Job{SubTask: "video", OutPath: videoPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
+		job = Job{Shotname: shotname, Task: "video", SubTask: "video", OutPath: videoPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	} else { // sequence input
 		start := StrPad(item.FrameIn, item.Pad)
@@ -268,8 +252,7 @@ func videoJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-resize", fmt.Sprintf("%sx%s", strconv.Itoa(initData.VideoWidth), strconv.Itoa(initData.VideoHeight)))
 		}
 		cmd = append(cmd, "-o", proxyPath)
-		job := Job{SubTask: "proxy", OutPath: proxyPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job := Job{Shotname: shotname, Task: "video", SubTask: "proxy", OutPath: proxyPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 		// make Video
 		cmd = []string{}
@@ -287,15 +270,13 @@ func videoJob(initData *InitData, item Item) []Job {
 			cmd = append(cmd, "-c:v", "prores_ks", "-profile:v", "5", "-vendor", "ap10", "-bits_per_mb", "8000", "pix_fmt", "yuva444p10le")
 		}
 		cmd = append(cmd, "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", videoPath)
-		job = Job{SubTask: "video", OutPath: videoPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
-		job.Render(initData.Ocio)
+		job = Job{Shotname: shotname, Task: "video", SubTask: "video", OutPath: videoPath, Cmd: cmd, Cmdstr: strings.Join(cmd, " ")}
 		jobs = append(jobs, job)
 	}
 	return jobs
 }
 
 func Publish(data []Item) ([]Item, error) {
-	pubs := []Pub{}
 	initData, err := LoadInit()
 	if err != nil {
 		return data, err
@@ -304,31 +285,36 @@ func Publish(data []Item) ([]Item, error) {
 		if !data[i].Pub {
 			continue
 		}
-		shotname := data[i].Shotname
-		pub := Pub{Shotname: shotname}
+		jobArray := make([]Job, 0)
 		if initData.ThumbCheck {
 			jobs := thumbnailJob(initData, data[i])
-			pub.Jobs = append(pub.Jobs, jobs...)
+			jobArray = append(jobArray, jobs...)
 		}
 		if initData.PlateCheck {
 			jobs := plateJob(initData, data[i])
-			pub.Jobs = append(pub.Jobs, jobs...)
+			jobArray = append(jobArray, jobs...)
 		}
 		if initData.VideoCheck {
 			jobs := videoJob(initData, data[i])
-			pub.Jobs = append(pub.Jobs, jobs...)
+			jobArray = append(jobArray, jobs...)
 		}
-		pubs = append(pubs, pub)
-		// make err array
-		errArray := make([]string, 0)
-		for _, pub := range pubs {
-			for _, job := range pub.Jobs {
-				errArray = append(errArray, job.Errorlog...)
+
+		// render by shot
+		errCheck := false
+		for _, job := range jobArray {
+			job.Render(initData.Ocio)
+			if strings.Join(job.Errorlog, ",") != "" {
+				errCheck = true
 			}
 		}
-		data[i].Log = strings.Join(errArray, ",")
+
+		now := time.Now().Format("2006-01-02 15:04:05")
+		if errCheck {
+			data[i].Log = "Error : " + now
+		} else {
+			data[i].Log = "Done : " + now
+		}
 	}
-	SaveLog(&pubs)
 	return data, nil
 }
 
@@ -381,33 +367,4 @@ func (i *Item) timecodeToFrame() {
 	duration = totc.Sub(tcin)              // get duration
 	trimOutframes := rate.Frames(duration) // get frames
 	i.TrimOut = int(1 + trimOutframes)
-}
-
-// save log data
-func SaveLog(pub *[]Pub) {
-	usr, err := user.Current()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	logFile := filepath.Join(usr.HomeDir, "patch", "log", time.Now().Format(time.RFC3339Nano))
-	// create directory if it doesn't
-	dir := filepath.Dir(logFile)
-	if !Exists(dir) {
-		err := os.MkdirAll(dir, os.ModePerm)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
-	files, err := json.MarshalIndent(pub, "", " ")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	err = ioutil.WriteFile(logFile, files, 0644)
-	if err != nil {
-		log.Println(err)
-		return
-	}
 }

@@ -55,11 +55,6 @@ let osSep = ""
 initSummit()
 
 function initSummit() {
-    fetch("/ossep")
-    .then(response => response.json())
-    .then(function(data) {
-        osSep = data["data"]
-    })
     fetch("/init")
     .then(response => response.json())
     .then(data => init(data))
@@ -176,6 +171,21 @@ function setInitData(initData) {
 ///////////////////////////////
 ///////////////
 // Modal
+
+// open modal window
+document.querySelector("#modal_btn").addEventListener("click", function(){
+    const modal = new bootstrap.Modal(document.getElementById('preferences_modal'))
+    modal.show()
+    // get os separator
+    fetch("/ossep")
+    .then(response => response.json())
+    .then(function(data) {
+        osSep = data["data"]
+    })
+    // set prefix, suffix
+    prefix.value = shotname.value.split(splitter.value, 2)[0]
+    suffix.value = shotname.value.split(splitter.value, 2)[1]
+})
 
 // save init data when modal closed.
 document.querySelector('#modal_close').addEventListener('click', function (event) {
@@ -616,17 +626,17 @@ let table = new Tabulator("#table", {
         {title:"ID", field:"id", headerVertical:true, hozAlign:"center", visible:false, editable:false, download:false},
         {title:"FILE PATH", field:"path", headerVertical:true, hozAlign:"left", visible:true, editable:false, download:true,
         contextMenu:cellContextMenu},
-        {title:"FRAME IN", field:"framein", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
-        {title:"FRAME OUT", field:"frameout", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
-        {title:"FRAME RANGE", field:"framerange", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"SEQUENCE PAD", field:"pad", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"TIMECODE IN", field:"timecodein", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"TIMECODE OUT", field:"timecodeout", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"WIDTH", field:"width", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"HEIGHT", field:"height", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"EXTENTION", field:"ext", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"FPS", field:"fps", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
-        {title:"CODEC", field:"codec", headerVertical:true, hozAlign:"center", cssClass:"marked", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"FRAME IN", field:"framein", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
+        {title:"FRAME OUT", field:"frameout", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, formatter:addPadding, contextMenu:cellContextMenu},
+        {title:"FRAME RANGE", field:"framerange", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"SEQUENCE PAD", field:"pad", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"TIMECODE IN", field:"timecodein", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"TIMECODE OUT", field:"timecodeout", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"WIDTH", field:"width", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"HEIGHT", field:"height", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"EXTENTION", field:"ext", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"FPS", field:"fps", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
+        {title:"CODEC", field:"codec", headerVertical:true, hozAlign:"center", visible:true, editable:false, download:true, contextMenu:cellContextMenu},
         {title:"SHOT NAME", field:"shotname", headerVertical:true, hozAlign:"left", editable:true, editor:"input", download:true,
         contextMenu:editContextMenu},
         {title:"TRIM IN(frame)", field:"trimin", headerVertical:true, hozAlign:"center", editable:true, editor:"number", download:true,
@@ -1111,11 +1121,17 @@ document.getElementById("pub_btn").addEventListener("click", function(){
     message("Item Published", "alert-success")
     let array = table.getData();
     let now = new Date();
+    let dateString = now.getUTCFullYear() + "-" +
+    ("0" + (now.getUTCMonth()+1)).slice(-2) + "-" +
+    ("0" + now.getUTCDate()).slice(-2) + " " +
+    ("0" + now.getUTCHours()).slice(-2) + ":" +
+    ("0" + now.getUTCMinutes()).slice(-2) + ":" +
+    ("0" + now.getUTCSeconds()).slice(-2);
     for (let i = 0; i < array.length; i++) {
         if (array[i].pub == false) {
             continue
         }
-        array[i].log = `Sent at : ${now.toLocaleString()}`
+        array[i].log = `Sent at : ${dateString}`
     }
     table.updateData(array)
     autoSave()
@@ -1142,12 +1158,7 @@ document.getElementById("pub_btn").addEventListener("click", function(){
             let searchDatas = table.searchData("shotname", "=", newData[i].shotname)
             for (let i = 0; i < searchDatas.length; i++) {
                 if (searchDatas[i].path == path) {
-                    if (log == "") {
-                        let now = new Date();
-                        searchDatas[i].log = `Done : ${now.toLocaleString()}`
-                    } else {
-                        searchDatas[i].log = log
-                    }
+                    searchDatas[i].log = log
                     table.updateRow(searchDatas[i].id, searchDatas[i])
                 }
             }

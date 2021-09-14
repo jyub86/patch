@@ -40,7 +40,7 @@ func Search(srcDir string) ([]Item, error) {
 			case ".jpg", ".jpeg", ".png", ".dpx", ".exr":
 				pathname, seq, pad := seqInfo(path)
 				if pathname == path { //single frame images(hasn't seqs number)
-					item := Item{Path: path, Ext: ext}
+					item := Item{Path: path, Ext: ext, FrameIn: 1, FrameOut: 1, FrameRange: 1}
 					dataMap[path] = item
 				} else if _, has := dataMap[pathname]; has { //path already exists
 					item := dataMap[pathname]

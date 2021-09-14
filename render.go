@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"time"
 )
@@ -39,4 +42,34 @@ func (job *Job) Render(ocio string) {
 	job.End = time.Now()
 	duration := time.Since(job.Start)
 	job.Duration = fmt.Sprint(duration)
+	SaveLog(job)
+}
+
+// save log data
+func SaveLog(job *Job) {
+	usr, err := user.Current()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	logFile := filepath.Join(usr.HomeDir, "patch", "log", time.Now().Format(time.RFC3339Nano))
+	// create directory if it doesn't
+	dir := filepath.Dir(logFile)
+	if !Exists(dir) {
+		err := os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
+	files, err := json.MarshalIndent(job, "", " ")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = ioutil.WriteFile(logFile, files, 0644)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
