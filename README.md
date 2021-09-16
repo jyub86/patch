@@ -1,5 +1,8 @@
 # PATCH
 
+![screenshot](figures/main.png)
+![screenshot](figures/log.png)
+
 PATCH is a tool for publishing image data.
 This tool uses 'OpenImageIO', 'FFmpeg', 'FFprobe' and 'OCIO'.
 
@@ -14,3 +17,11 @@ This tool uses 'OpenImageIO', 'FFmpeg', 'FFprobe' and 'OCIO'.
 * FFmpeg 4.2.1
 * FFprobe 4.2.1
 * OCIO aces_1.0.3
+
+### License
+* patch: BSD 3-Clause License
+* OpenImageIO: BSD 3-Clause License
+* FFmpeg: GNU Lesser General Public License, version 2.1
+* FFprobe: GNU Lesser General Public License, version 2.1
+* OCIO: BSD 3-Clause License
+* Tabulator: MIT license
