@@ -1,0 +1,26 @@
+{{define "logPage"}}
+<!DOCTYPE html>
+<html lang="ko">
+{{template "header"}}
+<body>
+    <!--container-->
+    <div class="container-fluid">
+        <div class="row justify-content-between mt-3">
+            <div class="col col-1">
+                <button type="button" class="btn btn-lg btn-outline-secondary text-darklight" id="home_btn">HOME</button>
+            </div>
+            <div class="col-3">
+                <input id="filter-value" type="text" class="form-control darklight text-darklight" placeholder="value to filter">
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col" id="log_table">    
+        </div>
+    </div>
+    {{template "footer"}}
+    <script type="text/javascript" src="bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="tabulator-master/dist/js/tabulator.min.js"></script>
+    <script src="js/log.js"></script>
+</body>
+</html>
+{{end}}

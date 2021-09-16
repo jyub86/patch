@@ -1,0 +1,13 @@
+{{define "confirm"}}
+<!--Load confirm-->
+<div id="load_confirm" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+    <div class="toast-header">
+        <strong class="me-auto">Clear or append?</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        <button type="button" class="btn btn-secondary" id="toast_clear" data-bs-dismiss="toast">Clear</button>
+        <button type="button" class="btn btn-secondary" id="toast_append" data-bs-dismiss="toast">Append</button>
+    </div>
+</div>
+{{end}}

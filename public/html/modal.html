@@ -1,0 +1,320 @@
+{{define "modal"}}
+<!-- Modal -->
+<div class="modal fade" id="preferences_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content darklight">
+            <div class="modal-header">
+                <h2 class="modal-title" id="staticBackdropLabel">Preferences</h2>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autosave_check" checked>
+                    <label class="form-check-label" for="autosave_check">
+                        Auto save
+                    </label>
+                </div>
+            </div>
+            <div class="modal-body container">
+                <div class="row mt-1">
+                    <h3>Support</h3>
+                </div>
+                <div class="row mt-3">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text darklight" id="ffmpeg_path_addon">FFmpeg path</span>
+                        <input type="text" class="form-control darklight" id="ffmpeg_path" placeholder="ffmpeg" aria-describedby="ffmpeg_path_addon">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text darklight" id="ffprobe_path_addon">FFprobe path</span>
+                        <input type="text" class="form-control darklight" id="ffprobe_path" placeholder="ffprobe" aria-describedby="ffprobe_path_addon">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text darklight" id="oiioTool_path_addon">OIIOTool path</span>
+                        <input type="text" class="form-control darklight" id="oiioTool_path" placeholder="oiioTool" aria-describedby="oiioTool_path_addon">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text darklight" id="ocio_path_addon">OCIO config path</span>
+                        <input type="text" class="form-control darklight" id="ocio_path" placeholder="config.ocio" aria-describedby="ocio_path_addon">
+                    </div>
+                </div>
+                <!--PUBLISH-->
+                <div class="row mt-4">
+                    <h3>Publish</h3>
+                </div>
+                <!--PRESET-->
+                <div class="row mt-3">
+                    <div class="col-2">
+                        <label for="preset">Preset</label>
+                        <select class="form-select darklight" id="preset" aria-label="Preset list">
+                            <option value="new">New</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label for="preset_name" class="preset_names">Name</label>
+                        <input type="text" class="form-control darklight preset_names" id="preset_name">
+                    </div>
+                    <div class="d-grid gap-2 col-1">
+                        <button type="button" id="prj_search" class="btn btn-outline-secondary" hidden>Search</button>
+                    </div>
+                    <div class="col-1 offset-md-6">
+                        <button type="button" id="preset_delete" class="btn btn-outline-danger">Delete Preset</button>
+                    </div>
+                </div>
+                <!--NAMING-->
+                <div class="row mt-5">
+                    <h5>Naming Rule</h5>
+                </div>
+                <div class="row">
+                    <div class="col-2 offset-md-1">
+                        <label for="splitter" class="">Splitter</label>
+                        <input type="text" class="form-control darklight" id="splitter" placeholder="_">
+                    </div>
+                    <div class="col-2 offset-md-1 my-auto">
+                        <h6 class="align-bottom">EXAMPLES :</h6>
+                    </div>
+                    <div class="col-2">
+                        <label for="shotname" class="">SHOTNAME</label>
+                        <input type="text" class="form-control darklight" id="shotname" placeholder="SS_0010">
+                    </div>
+                    <div class="col-2">
+                        <label for="prefix" class="">PREFIX</label>
+                        <input type="text" readonly class="form-control-plaintext darklight" id="prefix" placeholder="SS">
+                    </div>
+                    <div class="col-2">
+                        <label for="suffix" class="">SUFFIX</label>
+                        <input type="text" readonly class="form-control-plaintext darklight" id="suffix" placeholder="0010">
+                    </div>
+                <div class="row">
+                    <div class="col-2 offset-md-1">
+                        <label for="seqsplitter" class="">Seqeunce Splitter</label>
+                        <input type="text" class="form-control darklight" id="seqsplitter" placeholder=".">
+                    </div>
+                    <div class="col-2">
+                        <label for="seqpad" class="">Seqeunce pad</label>
+                        <input type="text" class="form-control darklight" id="seqpad" placeholder="4">
+                    </div>
+                    <div class="col-2">
+                        <label for="startat" class="">Start at</label>
+                        <input type="text" class="form-control darklight" id="startat" placeholder="1001">
+                    </div>
+                </div>
+                <!--OPTION-->
+                <div class="row mt-3">
+                    <h5>Option</h5>
+                </div>
+                <!--THUMBNAIL-->
+                <div class="row mt-2 ms-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="thumb_check" checked>
+                        <label class="form-check-label" for="thumb_check">Thumbnail</label>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3 offset-md-1">
+                        <label for="thumb_colorspace_in" class="thumb">Colorspace IN</label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_colorspace_in" placeholder="ACES - ACES2065-1">
+                    </div>
+                    <div class="col-3">
+                        <label for="thumb_colorspace_out" class="thumb">Colorspace OUT</label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_colorspace_out" placeholder="Output - Rec.709">
+                    </div>
+                    <div class="col-1">
+                        <label for="thumb_width" class="thumb">Format</label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_width" placeholder="1280">
+                    </div>
+                    <div class="col-auto formatx no-padding thumb">
+                        <span>x</span>
+                    </div>
+                    <div class="col-1">
+                        <label for="thumb_height" class="thumb"></label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_height" placeholder="720">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 offset-md-1">
+                        <label for="thumb_dir" class="thumb">Directory</label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_dir" placeholder=".../sample/thumbnail">
+                    </div>
+                    <div class="col-3">
+                        <label for="thumb_name" class="thumb">File Name</label>
+                        <input type="text" class="form-control darklight thumb" id="thumb_name" placeholder="<SHOTNAME>">
+                    </div>
+                    <div class="col-2">
+                        <label for="thumb_ext" class="thumb">Extension</label>
+                        <select class="form-select thumb darklight" id="thumb_ext" aria-label="Thumbnail extension">
+                            <option value=".png">png</option>
+                            <option value=".jpg">jpg</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-auto offset-md-1 my-auto">
+                        <label class="thumb">Thumbnail path Example : </label>
+                    </div>
+                    <div class="col">
+                        <input type="text" readonly class="form-control-plaintext thumb darklight" id="thumb_path" placeholder=".../sample/thumbnail/<SHOTNAME>.png">
+                    </div>
+                </div>
+                <!--PLATE-->
+                <div class="row mt-2 ms-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="plate_check" checked>
+                        <label class="form-check-label" for="plate_check">Plate</label>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3 offset-md-1">
+                        <label for="plate_colorspace_in" class="plate">Colorspace IN</label>
+                        <input type="text" class="form-control darklight plate" id="plate_colorspace_in" placeholder="ACES - ACES2065-1">
+                    </div>
+                    <div class="col-3">
+                        <label for="plate_colorspace_out" class="plate">Colorspace OUT</label>
+                        <input type="text" class="form-control darklight plate" id="plate_colorspace_out" placeholder="ACES - ACEScg">
+                    </div>
+                    <div class="col-1">
+                        <label for="plate_width" class="plate">Format</label>
+                        <input type="text" class="form-control darklight plate" id="plate_width" placeholder="2048">
+                    </div>
+                    <div class="col-auto formatx no-padding plate">
+                        <span>x</span>
+                    </div>
+                    <div class="col-1">
+                        <label for="plate_height" class="plate"></label>
+                        <input type="text" class="form-control darklight plate" id="plate_height" placeholder="1152">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 offset-md-1">
+                        <label for="plate_dir" class="plate">Directory</label>
+                        <input type="text" class="form-control darklight plate" id="plate_dir" placeholder=".../sample/plate/<PREFIX>/<SUFFIX>">
+                    </div>
+                    <div class="col-3">
+                        <label for="plate_name" class="plate">File Name</label>
+                        <input type="text" class="form-control darklight plate" id="plate_name" placeholder="<SHOTNAME>">
+                    </div>
+                    <div class="col-2">
+                        <label for="plate_ext" class="plate">Extension</label>
+                        <select class="form-select plate darklight" id="plate_ext" aria-label="plate extension">
+                            <option value=".exr">exr</option>
+                            <option value=".dpx">dpx</option>
+                            <option value=".tif">tif</option>
+                            <option value=".sgi">sgi</option>
+                            <option value=".tga">tga</option>
+                            <option value=".png">png</option>
+                            <option value=".jpg">jpg</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-auto offset-md-1 my-auto">
+                        <label class="plate">Plate path Example : </label>
+                    </div>
+                    <div class="col">
+                        <input type="text" readonly class="form-control-plaintext plate darklight" id="plate_path" placeholder=".../sample/plate/<PREFIX>/<SUFFIX>/<SHOTNAME>.%04d.exr">
+                    </div>
+                </div>
+                <!--Video-->
+                <div class="row mt-2 ms-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="video_check" checked>
+                        <label class="form-check-label" for="video_check">Video</label>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3 offset-md-1">
+                        <label for="video_colorspace_in" class="video">Colorspace IN</label>
+                        <input type="text" class="form-control darklight video" id="video_colorspace_in" placeholder="ACES - ACES2065-1">
+                    </div>
+                    <div class="col-3">
+                        <label for="video_colorspace_out" class="video">Colorspace OUT</label>
+                        <input type="text" class="form-control darklight video" id="video_colorspace_out" placeholder="Output - Rec.709">
+                    </div>
+                    <div class="col-1">
+                        <label for="video_width" class="video">Format</label>
+                        <input type="text" class="form-control darklight video" id="video_width" placeholder="1920">
+                    </div>
+                    <div class="col-auto formatx no-padding video">
+                        <span>x</span>
+                    </div>
+                    <div class="col-1">
+                        <label for="video_height" class="video"></label>
+                        <input type="text" class="form-control darklight video" id="video_height" placeholder="1080">
+                    </div>
+                    <div class="col-1">
+                        <label for="video_fps" class="video">FPS</label>
+                        <input type="text" class="form-control darklight video" id="video_fps" placeholder="24">
+                    </div>
+                    <div class="col-auto">
+                        <label for="video_codec" class="video">Codec</label>
+                        <select class="form-select video darklight" id="video_codec" aria-label="Video codec">
+                            <option value="h264">h264</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 offset-md-1">
+                        <label for="video_dir" class="video">Directory</label>
+                        <input type="text" class="form-control darklight video" id="video_dir" placeholder=".../sample/plate">
+                    </div>
+                    <div class="col-3">
+                        <label for="video_name" class="video">File Name</label>
+                        <input type="text" class="form-control darklight video" id="video_name" placeholder="<SHOTNAME>">
+                    </div>
+                    <div class="col-2">
+                        <label for="video_ext" class="video">Extension</label>
+                        <select class="form-select video darklight" id="video_ext" aria-label="Video extension">
+                            <option value=".mp4">mp4</option>
+                            <option value=".mov">mov</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-auto offset-md-1 my-auto">
+                        <label class="video">Video path Example : </label>
+                    </div>
+                    <div class="col">
+                        <input type="text" readonly class="form-control-plaintext video darklight" id="video_path" placeholder=".../sample/plate/<SHOTNAME>.mov">
+                    </div>
+                </div>
+                <!--Proxy-->
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="video">Proxy image</label>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 offset-md-1">
+                        <label for="proxy_dir" class="video">Directory</label>
+                        <input type="text" class="form-control darklight video" id="proxy_dir" placeholder=".../sample/plate/proxy">
+                    </div>
+                    <div class="col-3">
+                        <label for="proxy_name" class="video">File Name</label>
+                        <input type="text" class="form-control darklight video" id="proxy_name" placeholder="<SHOTNAME>">
+                    </div>
+                    <div class="col-2">
+                        <label for="proxy_ext" class="video">Extension</label>
+                        <select class="form-select video darklight" id="proxy_ext" aria-label="proxy extension">
+                            <option value=".png">png</option>
+                            <option value=".jpg">jpg</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-auto offset-md-1 my-auto">
+                        <label class="video">Proxy path Example : </label>
+                    </div>
+                    <div class="col">
+                        <input type="text" readonly class="form-control-plaintext video darklight" id="proxy_path" placeholder=".../sample/plate/proxy/<SHOTNAME>.%04d.png">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-success" id="modal_close" data-bs-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

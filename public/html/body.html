@@ -1,0 +1,86 @@
+{{define "body"}}
+<body>
+    <!--container-->
+    <div class="container-fluid">
+        {{template "loading"}}
+        {{template "message"}}
+        {{template "confirm"}}
+        <!--MAIN body-->
+        <div class="row mt-5">
+            <div class="col">
+                <h1 id="title">PATCH</h1>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="d-grid gap-2 col-2">
+                <input class="form-control darklight" type="file" accept=".csv" id="formFile" hidden>
+                <button type="button" class="btn btn-lg btn-outline-secondary text-darklight" id="load_btn">Load CSV</button>
+            </div>
+            <div class="col-md-auto col-lg-2">
+                <form class="form-floating darklight">
+                    <input type="text" class="form-control darklight" id="floatingInputValue" placeholder="/user/local/folder/path" value="">
+                    <label id="search_label" class="text-darklight" for="floatingInputValue">Search from path</label>
+                </form>
+            </div>
+            <div class="d-grid gap-2 col-2">
+                <button type="button" class="btn btn-lg btn-outline-secondary text-darklight" id="save_btn">Save CSV</button>
+            </div>
+            <div class="d-grid gap-2 offset-md-1 col-1">
+                <button type="button" class="btn btn-lg btn-outline-danger" id="clear">Clear all</button>
+            </div>
+            <div class="col-1 offset-md-3">
+                <button type="button" class="btn btn-outline-secondary text-darklight" id="modal_btn">Preferences</button>
+            </div>
+        </div>
+
+        <div class="row justify-content-md-end mt-3">
+            <div class="col-md-auto btn-group" role="group">
+                <button type="button" class="btn btn-secondary btn-sm ms-2" id="hide_all">HideALL</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="show_all">ShowALL</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="frame">Frame</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="timecode">Timecode</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="format">Format</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="ext">Extension</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="video">Video</button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-2">
+                <button type="button" id="select_all" class="btn btn-outline-secondary text-darklight">Select ALL</button>
+                <button type="button" id="deselect_all" class="btn btn-outline-secondary text-darklight">Unselect ALL</button>
+            </div>
+            <div class="col-sm">
+                <span class="text-darklight">Total : </span><span id="total-stats" class="text-darklight"></span>
+                <span class="text-darklight"> / Selected : </span><span id="select-stats" class="text-darklight">></span>
+            </div>
+            <div class="col-3">
+                <input id="filter-value" type="text" class="form-control darklight text-darklight" placeholder="value to filter" aria-describedby="basic-addon1">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-secondary text-darklight" id="undo_btn">Undo</button>
+                <button type="button" class="btn btn-outline-secondary text-darklight" id="redo_btn">Redo</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-secondary text-darklight" id="redraw">Redraw</button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col" id="table">    
+        </div>
+        <div class="row justify-content-md-end mt-3">
+            <div class="col col-lg-1">
+                <button type="button" class="btn btn-lg btn-outline-secondary text-darklight" id="log_btn">Log</button>
+            </div>
+            <div class="col col-lg-1">
+                <button type="button" class="btn btn-outline-success btn-lg" id="pub_btn">PUBLISH</button>
+            </div>
+        </div>
+    </div>
+    {{template "footer"}}
+    {{template "modal"}}
+
+    <script type="text/javascript" src="bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="tabulator-master/dist/js/tabulator.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+{{end}}

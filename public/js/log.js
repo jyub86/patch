@@ -1,3 +1,8 @@
+// log
+document.getElementById("home_btn").addEventListener("click", function(){
+    console.log("A")
+    location.href = "/";
+})
 
 // table data
 let tabledata = [{id:0, shotname:"", task:"", subtask:"", cmdstr:"", start:"", end:"", duration:"", errorlog:""}];

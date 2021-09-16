@@ -6,6 +6,9 @@ const ffmpeg = document.getElementById('ffmpeg_path')
 const ffprobe = document.getElementById('ffprobe_path')
 const oiioTool = document.getElementById('oiioTool_path')
 const ocio = document.getElementById('ocio_path')
+const preset = document.getElementById('preset')
+const presetName = document.getElementById('preset_name')
+const presetDelete = document.getElementById('preset_delete')
 const splitter = document.getElementById('splitter')
 const shotname = document.getElementById('shotname')
 const seqsplitter = document.getElementById('seqsplitter')
@@ -50,6 +53,7 @@ const proxyExt = document.getElementById('proxy_ext')
 const proxyPath = document.getElementById('proxy_path')
 const videoClass = document.querySelectorAll(".video")
 let osSep = ""
+let initDatas = []
 
 // set init data
 initSummit()
@@ -66,11 +70,12 @@ function init(data) {
         message(data["error"], "alert-danger")
         return
     }
-    let initData = data["data"]
-    if (!initData) {
+    initDatas = data["data"]
+    if (!initDatas) {
         document.getElementById("modal_btn").click()
     } else {
-        setInitData(initData)
+        presetSetup()
+        setInitData(initDatas[0])
     }
     if (autosaveCheck.checked) {
         // load autoSave
@@ -80,14 +85,25 @@ function init(data) {
     }
 }
 
+function presetSetup() {
+    // remove all childs
+    while ( preset.hasChildNodes() ) {
+        preset.removeChild( preset.firstChild );
+    }
+    for (let i = 0; i < initDatas.length; i++) {
+        preset.add(new Option(initDatas[i]["presetname"], initDatas[i]["presetname"]))
+    }
+    preset.add(new Option("new", "new"))
+}
+
 // set init data
 function setInitData(initData) {
-    console.log("InitData loaded.")
     autosaveCheck.checked = initData["autosavecheck"]
     ffmpeg.value = initData["ffmpeg"]
     ffprobe.value = initData["ffprobe"]
     oiioTool.value = initData["oiiotool"]
     ocio.value = initData["ocio"]
+    presetName.value = initData["presetname"]
     splitter.value = initData["splitter"]
     shotname.value = initData["shotname"]
     seqsplitter.value = initData["seqsplitter"]
@@ -149,23 +165,24 @@ function setInitData(initData) {
     proxyPath.value = initData["proxypath"]
 
     // check thumbnail option
-    if (!thumb_check.checked) {
+    if (!thumbCheck.checked) {
         for (let i = 0; i <thumbClass.length; i++) {
             thumbClass[i].style.display = 'none';
         }
     }
     // check plate option
-    if (!plate_check.checked) {
+    if (!plateCheck.checked) {
         for (let i = 0; i <plateClass.length; i++) {
             plateClass[i].style.display = 'none';
         }
     }
     // check video option
-    if (!video_check.checked) {
+    if (!videoCheck.checked) {
         for (let i = 0; i <videoClass.length; i++) {
             videoClass[i].style.display = 'none';
         }
     }
+    presetInputShow()
 }
 
 ///////////////////////////////
@@ -189,7 +206,32 @@ document.querySelector("#modal_btn").addEventListener("click", function(){
 
 // save init data when modal closed.
 document.querySelector('#modal_close').addEventListener('click', function (event) {
+    if (!presetName.value) {
+        alert("No preset name. Can not save it.");
+        return
+    }
+    fetch("/savepreset", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(currentPreferences())
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Error:', error))
+    .then(function(data) {
+        if ("error" in data) {
+            message(data["error"], "alert-danger")
+            return
+        }
+        initSummit()
+        message("Preferences saved", "alert-success")
+    })
+})
+
+function currentPreferences() {
     let pref = {
+        "presetname" : presetName.value,
         "autosavecheck" : autosaveCheck.checked,
         "ffmpeg" : ffmpeg.value,
         "ffprobe" : ffprobe.value,
@@ -234,23 +276,9 @@ document.querySelector('#modal_close').addEventListener('click', function (event
         "proxyext" : proxyExt.options[proxyExt.selectedIndex].value,
         "proxypath" : proxyPath.value,
     }
-    fetch("/makeinit", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(pref)
-    })
-    .then(response => response.json())
-    .catch(error => console.error('Error:', error))
-    .then(function(data) {
-        if ("error" in data) {
-            message(data["error"], "alert-danger")
-            return
-        }
-        message("Preferences saved", "alert-success")
-    })
-})
+    return pref
+}
+
 
 document.querySelector('#preferences_modal').addEventListener('hidden.bs.modal', function (event) {
     err = "Preference setup is not completed. It may not operate correctly."
@@ -273,6 +301,55 @@ document.querySelector('#preferences_modal').addEventListener('hidden.bs.modal',
     }
 })
 
+// preset changed
+preset.addEventListener("change", function(){
+    let presetValue = preset.options[preset.selectedIndex].value
+    for (let i = 0; i < initDatas.length; i++) {
+        if (initDatas[i]["presetname"] === presetValue) {
+            setInitData(initDatas[i])
+            break
+        }
+    }
+    presetInputShow()
+})
+
+// preset input element hide and show
+function presetInputShow() {
+    const presetClass = document.querySelectorAll(".preset_names")
+    if (preset.options[preset.selectedIndex].value != "new") {
+        for (let i = 0; i <presetClass.length; i++) {
+            presetClass[i].hidden = true;
+        }
+    } else {
+        for (let i = 0; i <presetClass.length; i++) {
+            presetClass[i].hidden = false;
+        }
+    }
+}
+presetDelete.addEventListener("click", function(){
+    let thisPreset = preset.options[preset.selectedIndex].value
+    let an = confirm(`Delete ${thisPreset} preset?`);
+    if (!an) {
+        return
+    }
+    fetch("/deletepreset", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(currentPreferences())
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Error:', error))
+    .then(function(data) {
+        if ("error" in data) {
+            message(data["error"], "alert-danger")
+            return
+        }
+        initSummit()
+        message("Preferences Deleted", "alert-success")
+    })
+})
 
 // splitter change
 splitter.addEventListener("keyup", function(){
@@ -332,11 +409,11 @@ startat.addEventListener("keyup", function(){
 thumbCheck.addEventListener("change", function(){
     if (thumb_check.checked) {
         for (let i = 0; i <thumbClass.length; i++) {
-            thumbClass[i].style.display = 'block';
+            thumbClass[i].hidden = false;
         }
     } else {
         for (let i = 0; i <thumbClass.length; i++) {
-            thumbClass[i].style.display = 'none';
+            thumbClass[i].hidden = true;
         }
     }
 })
@@ -373,11 +450,11 @@ thumbExt.addEventListener("change", function(){
 plateCheck.addEventListener("change", function(){
     if (plate_check.checked) {
         for (let i = 0; i <plateClass.length; i++) {
-            plateClass[i].style.display = 'block';
+            plateClass[i].hidden = false;
         }
     } else {
         for (let i = 0; i <plateClass.length; i++) {
-            plateClass[i].style.display = 'none';
+            plateClass[i].hidden = true;
         }
     }
 })
@@ -414,11 +491,11 @@ plateExt.addEventListener("change", function(){
 videoCheck.addEventListener("change", function(){
     if (video_check.checked) {
         for (let i = 0; i <videoClass.length; i++) {
-            videoClass[i].style.display = 'block';
+            videoClass[i].hidden = false;
         }
     } else {
         for (let i = 0; i <videoClass.length; i++) {
-            videoClass[i].style.display = 'none';
+            videoClass[i].hidden = true;
         }
     }
 })
@@ -457,19 +534,19 @@ videoName.addEventListener("keyup", function(){
 
 videoExt.addEventListener("change", function(){
     updateVideoPath()
-    if (videoCodec.options[videoCodec.selectedIndex].value == "mp4") {
+    if (videoExt.options[videoExt.selectedIndex].value == ".mp4") {
         for (let i = videoCodec.options.length-1; i >= 0; i--) {
             videoCodec.removeChild(videoCodec.options[i])
         }
-        video_codec.add(new Option('h264', 'h264'))
+        videoCodec.add(new Option('h264', 'h264'))
     } else {
         for (let i = videoCodec.options.length-1; i >= 0; i--) {
             videoCodec.removeChild(videoCodec.options[i])
         }
-        video_codec.add(new Option('h264', 'h264'))
-        video_codec.add(new Option('proresLT', 'proresLT'))
-        video_codec.add(new Option('proresHQ', 'proresHQ'))
-        video_codec.add(new Option('prores4444', 'prores4444'))
+        videoCodec.add(new Option('h264', 'h264'))
+        videoCodec.add(new Option('proresLT', 'proresLT'))
+        videoCodec.add(new Option('proresHQ', 'proresHQ'))
+        videoCodec.add(new Option('prores4444', 'prores4444'))
     }
 })
 
@@ -1166,6 +1243,11 @@ document.getElementById("pub_btn").addEventListener("click", function(){
         autoSave()
         message("Publish done", "alert-success")
     })
+})
+
+// log
+document.getElementById("log_btn").addEventListener("click", function(){
+    location.href = "/log";
 })
 
 // Message
