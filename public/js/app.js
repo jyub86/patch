@@ -606,7 +606,7 @@ const cellContextMenu = [
     {
         label:"Select all",
         action:function(e, cell){
-            table.selectRow();
+            table.selectRow("visible");
         }
     },
     {
@@ -648,7 +648,7 @@ const editContextMenu = [
     {
         label:"Select all",
         action:function(e, cell){
-            table.selectRow();
+            table.selectRow("visible");
         }
     },
     {
@@ -682,9 +682,19 @@ const editContextMenu = [
             autoSave();
         }
     },
+    {
+        label:"Auto fill names",
+        action:function(e, cell){
+            const userConfirm2 = document.getElementById("user_confirm2")
+            userConfirm2.style.zIndex = 999;
+            var toast = new bootstrap.Toast(userConfirm2)
+            userConfirm2.style.left = (mouseX) + 'px';
+            userConfirm2.style.top = (mouseY) + 'px';
+            toast.show()
+        }
+    },
 ]
 
-// make Table
 let table = new Tabulator("#table", {
     data:tabledata,
     autoColumns:true,
@@ -756,11 +766,11 @@ let table = new Tabulator("#table", {
             data[field] = value
             data["log"] = ""
             // pub check
-            if (!isShotname(data)) {
+            if (!isShotname(data) && data["pub"]) {
                 data["pub"] = false;
                 data["log"] = "shotname does not exist."
             }
-            if (isSamename(data)) {
+            if (isSamename(data) && data["pub"]) {
                 data["pub"] = false;
                 data["log"] = "same shotname exists."
             }
@@ -838,15 +848,36 @@ function isSamename(data) {
     return false;
 }
 
+// auto fill
+document.getElementById("toast_fill").addEventListener("click", function(){
+    let fillName = document.getElementById("toast_name").value
+    let fillStart = document.getElementById("toast_start").value
+    let fillPad = String(fillStart).length;
+    let fillStep = document.getElementById("toast_step").value
+    let selRows = table.getSelectedRows();
+    if (selRows) {
+        let num = parseInt(fillStart)
+        for(var i=0; i<selRows.length; i++) {
+            let fullName = fillName + fillZero(fillPad, String(num))
+            data = selRows[i].getData()
+            data["shotname"] = fullName
+            table.updateRow(selRows[i].getIndex(), data)
+            num = parseInt(num) + parseInt(fillStep)
+        }
+    }
+    table.redraw(true);
+    autoSave();
+});
+
 // delete dummy row
 let dummyRow = table.searchRows("path", "=", "");
 table.deleteRow(dummyRow);
 
 // load csv button
 document.getElementById("load_btn").addEventListener("click", function(){
-    const loadAsk = document.getElementById("load_confirm")
-    loadAsk.style.zIndex = 999;
-    var toast = new bootstrap.Toast(loadAsk)
+    const userConfirm = document.getElementById("user_confirm")
+    userConfirm.style.zIndex = 999;
+    var toast = new bootstrap.Toast(userConfirm)
     toast.show()
 });
 document.getElementById("toast_clear").addEventListener("click", function(){
@@ -1168,7 +1199,7 @@ document.getElementById("video").addEventListener("click", function(){
 
 // select row on "select all" button click
 document.getElementById("select_all").addEventListener("click", function(){
-    table.selectRow();
+    table.selectRow("visible");
 });
 
 // deselect row on "deselect all" button click
@@ -1191,6 +1222,13 @@ document.getElementById("clear").addEventListener("click", function(){
     table.clearData()
     document.getElementById("total-stats").innerHTML = table.getDataCount();
     autoSave()
+});
+
+// shortcut
+window.addEventListener("keydown", function(e) {
+    if (e.keyCode == 27) { // esc Event
+        table.deselectRow();
+    }
 });
 
 // Publish
@@ -1262,3 +1300,12 @@ function message(text, cls) {
         alertMsg.classList.remove(cls);
     }, 3000);
 }
+
+// mouse right click position
+let mouseX = 0;
+let mouseY = 0;
+function printMousePos(event) {
+    mouseX = event.pageX;
+    mouseY = event.pageY;
+}
+document.addEventListener("contextmenu", printMousePos);

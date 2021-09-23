@@ -42,7 +42,7 @@ input:-webkit-autofill:active  {
 }
 
 #table .tabulator-selected {
-    background-color: rgb(180, 180, 180)!important;
+    background-color: rgb(170, 190, 210)!important;
     color :rgb(0, 0, 0);
 }
 
@@ -112,11 +112,8 @@ input:-webkit-autofill:active  {
     left: 40px
 }
 
-#load_confirm {
+.toast {
     position: absolute;
-    margin: auto;
-    top: 20%;
-    left: 38%;
     font-size: 20px;
     z-index: -10;
 }

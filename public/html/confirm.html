@@ -1,6 +1,6 @@
 {{define "confirm"}}
 <!--Load confirm-->
-<div id="load_confirm" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+<div id="user_confirm" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
     <div class="toast-header">
         <strong class="me-auto">Clear or append?</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -8,6 +8,45 @@
     <div class="toast-body">
         <button type="button" class="btn btn-secondary" id="toast_clear" data-bs-dismiss="toast">Clear</button>
         <button type="button" class="btn btn-secondary" id="toast_append" data-bs-dismiss="toast">Append</button>
+    </div>
+</div>
+{{end}}
+
+{{define "confirm2"}}
+<!--Load confirm-->
+<div id="user_confirm2" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+    <div class="toast-header">
+        <strong class="me-auto">Auto fill names</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body container-fluid">
+        <div class="row">
+            <div class="col">
+                <span>prefix : </span>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" id="toast_name" placeholder="ss_">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <span>start number : </span>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" id="toast_start" value="0010" placeholder="0010">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <span>step : </span>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" id="toast_step" value="10" placeholder="10">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <button type="button" class="btn btn-secondary" id="toast_fill" data-bs-dismiss="toast">Fill names</button>
+        </div>
     </div>
 </div>
 {{end}}
