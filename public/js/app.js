@@ -610,7 +610,7 @@ const cellContextMenu = [
         }
     },
     {
-        label:"Unselect all",
+        label:"Deselect all",
         action:function(e, cell){
             table.deselectRow();
         }
@@ -652,7 +652,7 @@ const editContextMenu = [
         }
     },
     {
-        label:"Unselect all",
+        label:"Deselect all",
         action:function(e, cell){
             table.deselectRow();
         }

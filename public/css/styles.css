@@ -109,9 +109,6 @@ input:-webkit-autofill:active  {
 #search_label {
     font-size: 20px;
     top: -3px;
-    left: 50%;
-    transform: translate(-50%);
-    width: 200px;
 }
 
 .toast {

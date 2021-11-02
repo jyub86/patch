@@ -2,6 +2,7 @@
 
 ![screenshot](figures/main.png)
 ![screenshot](figures/log.png)
+![screenshot](figures/preferences.png)
 
 PATCH is a tool for publishing image data.
 This tool uses 'OpenImageIO', 'FFmpeg', 'FFprobe' and 'OCIO'.
